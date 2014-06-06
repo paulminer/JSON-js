@@ -561,7 +561,12 @@ if (typeof DSON !== 'object') {
 
 // Since DSON isn't that close to javascript's native format, we're gonna parse this
 // instead of relying on eval
-            var o = new DSONParser(text).parse();
+            var parser = new DSONParser(text);
+            var o = parser.parse();
+            parser.skipWhitespace();
+            if (parser.remaining()) {
+                throw new SyntaxError('DSON.parse: Unexpected input beyond end of data');
+            }
             
             return typeof reviver === 'function'
                 ? walk({'': o}, '')
